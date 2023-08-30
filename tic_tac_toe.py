@@ -11,8 +11,8 @@ def __main__():
     pygame.init()
     newGameFlag = True
     # Constants for the game window
-    WIDTH, HEIGHT = 300, 300
-    win = pygame.display.set_mode((WIDTH, HEIGHT))
+    WIDTH, HEIGHT = 500, 500
+    win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Tic Tac Toe")
     score = {"X":0,"O":0}
     # Colors
@@ -31,6 +31,11 @@ def __main__():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+        
+                if event.type == pygame.VIDEORESIZE:
+                    new_width, new_height = event.size
+                    WIDTH, HEIGHT = new_width, new_height
+                    win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
         
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # Get the position of the mouse click
@@ -63,9 +68,37 @@ def __main__():
                         pygame.draw.circle(win, WHITE, (col * WIDTH // 3 + WIDTH // 6, row * HEIGHT // 3 + HEIGHT // 6), WIDTH // 6, 3)
             
             winStatus = winCheck(board)
-            print(winStatus)
+            drawStatus = checkDraw(board)
+            if drawStatus == True:
+                print(board)
+                drawText = "DRAW"
+                drawButton = button(50, 100, 200, 100, drawText, WHITE, BLACK)
+                newGameText = "New Game"
+                newGameButton = button(165,225,125,50,newGameText,WHITE,BLACK)
+                quitText = "Quit"
+                quitButton = button(25,225,100,50, quitText, WHITE, BLACK)
+                win.fill(BLACK)
+                drawButton.draw(win)
+                newGameButton.draw(win)
+                quitButton.draw(win)
+                for event in pygame.event.get():
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        mouseX, mouseY = pygame.mouse.get_pos()
+                        if newGameButton.is_clicked(pygame.mouse.get_pos()):
+                            print("New Game Button clicked!")
+                            turn = 'X'
+                            board = [['' for _ in range(3)] for _ in range(3)]
+                            for i in range(1, 3):
+                                pygame.draw.line(win, WHITE, (0, i * HEIGHT // 3), (WIDTH, i * HEIGHT // 3))
+                                pygame.draw.line(win, WHITE, (i * WIDTH // 3, 0), (i * WIDTH // 3, HEIGHT))
+                                gameStatus = True
+                        if quitButton.is_clicked(pygame.mouse.get_pos()):
+                            print("Quit Button clicked!")
+                            newGameFlag = False
+                            running = False
             if winStatus != "A":
                 if gameStatus == True:  
+                    print(winStatus)
                     score[winStatus] = score[winStatus] + 1
                     gameStatus = False
                     print(score)
@@ -135,6 +168,17 @@ def winCheck(board):
         winner = board[0][0]
         return winner
     return "A"
+
+def checkDraw(board):
+    draw = False
+    k = 0
+    for i in board:
+        for j in i:
+            if j != '':
+                k+= 1
+    if k == 9:
+        draw = True
+    return draw
 
 class button:
     def __init__(self, x, y, width, height, text, button_color, text_color):
