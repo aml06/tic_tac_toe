@@ -31,11 +31,12 @@ def __main__():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
-        
+                    newGameFlag = False
                 if event.type == pygame.VIDEORESIZE:
                     new_width, new_height = event.size
                     WIDTH, HEIGHT = new_width, new_height
                     win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+                    pygame.display.update()
         
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # Get the position of the mouse click
@@ -52,7 +53,7 @@ def __main__():
         
             # Clear the screen
             win.fill(BLACK)
-        
+
             # Draw the grid lines
             for i in range(1, 3):
                 pygame.draw.line(win, WHITE, (0, i * HEIGHT // 3), (WIDTH, i * HEIGHT // 3))
@@ -70,7 +71,6 @@ def __main__():
             winStatus = winCheck(board)
             drawStatus = checkDraw(board)
             if drawStatus == True:
-                print(board)
                 drawText = "DRAW"
                 drawButton = button(50, 100, 200, 100, drawText, WHITE, BLACK)
                 newGameText = "New Game"
@@ -96,6 +96,9 @@ def __main__():
                             print("Quit Button clicked!")
                             newGameFlag = False
                             running = False
+                    if event.type == pygame.QUIT:
+                        running = False
+                        newGameFlag = False
             if winStatus != "A":
                 if gameStatus == True:  
                     print(winStatus)
@@ -109,9 +112,13 @@ def __main__():
                 scoreText = "X: " + xScore + "    O: " + oScore
                 quitText = "Quit"
                 win.fill(BLACK)
-                winButton = button(50, 100, 200, 100, winText, WHITE, BLACK)
-                newGameButton = button(165,225,125,50,newGameText,WHITE,BLACK)
-                quitButton = button(25,225,100,50, quitText, WHITE, BLACK)
+                winButtonWidth = WIDTH // 2
+                winButtonHeight = HEIGHT // 3
+                centeredX = 4 * WIDTH // 5 - winButtonWidth
+                centeredy = 2 * HEIGHT // 3 - winButtonHeight
+                winButton = button(centeredX, centeredy, winButtonWidth, winButtonHeight, winText, WHITE, BLACK)
+                newGameButton = button(WIDTH // 6, 3* HEIGHT // 4,125,50,newGameText,WHITE,BLACK)
+                quitButton = button(3 * WIDTH // 5, 3* HEIGHT // 4,100,50, quitText, WHITE, BLACK)
                 scoreButton = button(25,25,125,50, scoreText, WHITE, BLACK)
                 winButton.draw(win)
                 newGameButton.draw(win)
@@ -132,6 +139,14 @@ def __main__():
                             print("Quit Button clicked!")
                             newGameFlag = False
                             running = False
+                    if event.type == pygame.VIDEORESIZE:
+                        new_width, new_height = event.size
+                        WIDTH, HEIGHT = new_width, new_height
+                        win = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+                        pygame.display.update()
+                    if event.type == pygame.QUIT:
+                        running = False
+                        newGameFlag = False
                 #pygame.draw.rect(win, quit_button_color, quit_button_rect)
                 #win.blit(quit_button_text, quit_text_rect)
                     
